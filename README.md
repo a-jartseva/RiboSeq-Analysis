@@ -13,5 +13,6 @@ Overview:
     Calculate the length distribution of virus and mRNA-mapping reads + plot.
     Calculate framing of reads on virus and host mRNA transcripts + plot.
     Assess contamination of samples by ribonucleoproteins (RNPs).
+    Analysis of chimeric reads.
     Host cell differential gene expression.
     GO term enrichment.
