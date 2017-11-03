@@ -13,8 +13,8 @@
 
 Before beginning, ensure that the following programs are installed:
 
-- FASTX-Toolkit (hannonlab.cshl.edu/fastx_toolkit/)
-- bowtie v1 (bowtie-bio.sourceforge.net)
+- FASTX-Toolkit (http://hannonlab.cshl.edu/fastx_toolkit/)
+- bowtie v1 (http://bowtie-bio.sourceforge.net)
 - STAR (https://github.com/alexdobin/STAR)
 - GNU parallel (https://www.gnu.org/software/parallel/)
 
