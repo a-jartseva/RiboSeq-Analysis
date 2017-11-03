@@ -2,11 +2,13 @@
 
 # Set parameters:
 
+workingdir=$(pwd)
+
 # Directories
 databasedir="X" # directory containing bowtie databases
 stardbdir="X" # directory containing STAR databases
-scriptsdir="X" # directory containing analysis scripts (python scripts, etc.)
-plotsdir="X" # directory containing plot scripts (R scripts)
+scriptsdir="$workingdir/Scripts" # directory containing analysis scripts (python scripts, etc.)
+plotsdir="$workingdir/Plots" # directory containing plot scripts (R scripts)
 
 # Database names
 databases1="rRNA:rRNA/rRNA"
