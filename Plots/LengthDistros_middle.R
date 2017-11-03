@@ -1,10 +1,11 @@
-lengths_table = read.table(paste(data_dir,"lll",".len.percs.combined",sep=""),header=T)
 
-lengths_melt = melt(lengths_table1,id="Length_nt")
+lengths_table = read.table(paste("lll",".len.percs.combined",sep=""),header=T)
+
+lengths_melt = melt(lengths_table,id="Length_nt")
 
 ymax <- max(lengths_melt$value)
 
-nnn<-ggplot(lengths_melt,  aes(x=Length_nt, y=value, group=variable, color=variable)) +
+ppp<-ggplot(lengths_melt,  aes(x=Length_nt, y=value, group=variable, color=variable)) +
   geom_line(size=1.1) + scale_color_manual("",values=colours) +
   xlab("Length (nt)") + ylab("% of reads") + ylim(0,50) + xlim(25,50) +
   theme(text = element_text(size=cc1)) +
@@ -19,6 +20,7 @@ nnn<-ggplot(lengths_melt,  aes(x=Length_nt, y=value, group=variable, color=varia
   theme(legend.position="none") +
   annotate(geom="text", x=42, y=45, label="lll",color="black", size=5)
 
+plotslist[[nnn]] <- ppp
 #extract the legend
 
 leg_plot<-ggplot(lengths_melt,  aes(x=Length_nt, y=value, group=variable, color=variable)) +

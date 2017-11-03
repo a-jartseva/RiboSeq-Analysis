@@ -1,9 +1,14 @@
-library(gridExtra)  # if not installed, run install.packages("gridExtra")
+library(grid)
+library(gridExtra)
+library(reshape2)
+library(ggplot2)
 
-# data_dir="/home/adam/Documents/Papers/MuLV/length_distros/"
-data_dir="ddd"
+# if a library is not installed, run e.g. install.packages("gridExtra")
+
 cc1=12
 
 colours <- c(colors()[630], colors()[51])
+
+plotslist <- list()
 
 #----------------------------------------------------------------------------
