@@ -2,7 +2,7 @@
 
 **Overview of pipeline:**
 
-- Trim reads.
+- Quality assessment and trimming of reads.
 - Map sequentially to rRNA; vRNA; mRNA; ncRNA; host genome.
 - Plot the read mapping statistics.
 - Plot length distribution, phasing, and positions of reads relative to start and stop codons on host RefSeq mRNAs.
