@@ -25,7 +25,7 @@ Additionally, the following R packages must be installed for plotting:
 - reshape2
 - ggplot2
 
-**Cloning the Git respository**
+**Cloning the Git respository:**
 
 To get started, make a local copy of the Git repository:
 
