@@ -1,18 +1,40 @@
-# RiboSeq-Analysis
+# Analysis of Ribosome Profiling and RNA sequence data for virus infections of host cells.
 
-Analysis of Ribosome Profiling and RNA sequence data for virus infections of host cells.
+Overview of pipeline:
 
-November 2017.
+- Trim reads.
+- Map sequentially to rRNA; vRNA; mRNA; ncRNA; host genome.
+- Plot the read mapping statistics.
+- Plot length distribution, phasing, and positions of reads relative to start and stop codons on host RefSeq mRNAs.
+- Assess contamination of samples by ribonucleoproteins (RNPs)
+- For virus-infected samples, make combined plots showing length distribution of reads mapping to virus and host coding sequences.
 
-Overview:
+Pre-requisites:
 
-    Quality assessment of data.
-    Trim reads.
-    Map sequentially to rRNA; vRNA; mRNA; ncRNA; host genome.
-    Plot mapping statistics.
-    Calculate the length distribution of virus and mRNA-mapping reads + plot.
-    Calculate framing of reads on virus and host mRNA transcripts + plot.
-    Assess contamination of samples by ribonucleoproteins (RNPs).
-    Analysis of chimeric reads.
-    Host cell differential gene expression.
-    GO term enrichment.
+Before beginning, ensure that the following programs are installed:
+
+- FASTX-Toolkit (hannonlab.cshl.edu/fastx_toolkit/)
+- bowtie v1 (bowtie-bio.sourceforge.net)
+- STAR (https://github.com/alexdobin/STAR)
+- GNU parallel (https://www.gnu.org/software/parallel/)
+
+Additionally, the following R packages must be installed for plotting:
+
+- grid
+- gridExtra
+- reshape2
+- ggplot2
+
+Cloning the Git respository
+
+To get started, make a local copy of the Git repository:
+
+     git clone https://github.com/adamd3/RiboSeq-Analysis.git
+
+Now you can change directory to RiboSeq-Analysis and begin.
+
+
+
+
+
+
