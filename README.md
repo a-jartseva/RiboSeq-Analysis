@@ -1,6 +1,6 @@
 # Analysis of Ribosome Profiling and RNA sequence data for virus infections of host cells.
 
-Overview of pipeline:
+**Overview of pipeline:**
 
 - Trim reads.
 - Map sequentially to rRNA; vRNA; mRNA; ncRNA; host genome.
@@ -9,7 +9,7 @@ Overview of pipeline:
 - Assess contamination of samples by ribonucleoproteins (RNPs)
 - For virus-infected samples, make combined plots showing length distribution of reads mapping to virus and host coding sequences.
 
-Pre-requisites:
+**Pre-requisites:**
 
 Before beginning, ensure that the following programs are installed:
 
@@ -25,7 +25,7 @@ Additionally, the following R packages must be installed for plotting:
 - reshape2
 - ggplot2
 
-Cloning the Git respository
+**Cloning the Git respository**
 
 To get started, make a local copy of the Git repository:
 
