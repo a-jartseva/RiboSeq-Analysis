@@ -370,6 +370,98 @@ do
 done
 
 
+#-------------------------------------------------------------------------
+
+# Assess contamination by RNPs; i.e. proteins binding to RNAs and forming
+#  complexes which happen to sediment with ribosomes and produce refseq_mRNA
+#  footprints. These will have a different read length size distribution from
+#  bona fide ribosome footprints. We can't recognize them on an individual
+#  basis, but we can quantify the level of contamination by comparing the read
+#  length size distributions of footprints in CDSs (mostly real ribosome
+#  footprints) to footprints in regions expected to have very few bona fide
+#  footprints (e.g. 3'UTRs).
+
+#Mostly relevant to virus work (nucleocapsids non-specifically binding RNA) and
+#  can gauge RNP contamination by comparing infected vs mock.
+
+#Select refseq_mRNAs with > 100 codons 3'UTR and >150 codons CDS. Calculate density of
+#  ribosomes in first 100 codons of 3'UTR relative to last 100 codons of CDS,
+#  avoiding 10 codons around the stop codon. Also compare footprint size
+#  distributions. Do for fwd and rev.
+
+offset=12 #approximate P-site location
+minlen=25
+maxlen=50
+rm -f RNPcontamination.txt
+for line in $(awk '{printf "%s@%s@%s\n", $1,$4,$5}' libraries.txt)
+do
+  library=$(echo $line | awk -F"@" '{print $1}')
+  awk '{if ($3=="+") print $4,$5+1+"'"$offset"'",length($6)}' \
+    $library.mRNA.bowtie | egrep -v "<|>|join" | sed 's/_/ /g' | \
+    sed 's/\.\./ /' | sed 's/NM /NM_/' | sed 's/XM /XM_/' | \
+    awk '{if ($4-$3>=0+300&&1+$3-$2>=0+450) print $0}' > temp1.fwd
+  awk '{print $5-$3,$6}' temp1.fwd > temp1.fwd.total
+  sort temp1.fwd | uniq | awk '{print $5-$3,$6}' > temp1.fwd.uniq
+  awk '{if ($3=="-") print $4,$5+1+"'"$offset"'",length($6)}' \
+    $library.mRNA.bowtie | egrep -v "<|>|join" | sed 's/_/ /g' | \
+    sed 's/\.\./ /' | sed 's/NM /NM_/' | sed 's/XM /XM_/' | \
+    awk '{if ($4-$3>=0+300&&1+$3-$2>=0+450) print $0}' > temp1.rev
+  awk '{print $5-$3,$6}' temp1.rev > temp1.rev.total
+  sort temp1.rev | uniq | awk '{print $5-$3,$6}' > temp1.rev.uniq
+  for mode in uniq total
+  do
+    for dir in fwd rev
+    do
+      awk '{if (0+$1>=0-300&&0+$1<=0+300) print $0}' temp1.$dir.$mode | \
+        awk '{if (0+$1<=0-30||0+$1>=0+30) print $0}' > temp2
+      awk '{if (0+$1<0+0) print $0}' temp2 > temp2.$dir.cds #if the mapping pos is upstream of the start codon
+      awk '{if (0+$1>0+0) print $0}' temp2 > temp2.$dir.utr
+      rm -f temp2
+      for region in cds utr
+      do
+        rm -f $library.RNP.$dir.$region
+        rm -f $library.RNP.$mode.$dir.$region
+        for len in $(seq $minlen $maxlen)
+        do
+          num=$(awk '{if ($2=="'"$len"'") s+=1}END{print 0+s}'\
+            temp2.$dir.$region)
+          echo $len $num  >> $library.RNP.$mode.$dir.$region
+        done
+      done
+    done
+    nCDSfwd=$(wc -l temp2.fwd.cds | awk '{print $1}') #number of line in this file=number of reads being considered
+    nUTRfwd=$(wc -l temp2.fwd.utr | awk '{print $1}')
+    nCDSrev=$(wc -l temp2.rev.cds | awk '{print $1}')
+    nUTRrev=$(wc -l temp2.rev.utr | awk '{print $1}')
+    echo $line $mode $nCDSfwd $nUTRfwd $nCDSrev $nUTRrev | sed 's/@/ /g' \
+      >> RNPcontamination.txt
+    cat $plotsdir/RNPcontamination.R | sed 's/ttt/'$line'/' | \
+      sed 's/lll/'$library'/' | sed 's/mmm/'$mode'/' | sed 's/@/ /g' \
+      > $library.RNP.$mode.R
+    R --no-save --slave < $library.RNP.$mode.R
+    rm -f temp2.{fwd,rev}.{cds,utr} temp1
+  done
+  rm -f temp1.{fwd,rev}.{uniq,total} temp1.{fwd,rev}
+done
+
+grep -i Ribo RNPcontamination.txt | \
+  awk '{printf "%s %s %s %s %.3f\n",$1,$2,$3,$4,$6/$5}'
+#-> This shows the level of RNP contamination (assuming a baseline of zero
+# footprint density in UTRs; mostly relevant for virus work where you can
+#  compare infected vs mock to get the real baseline in 3'UTRs).
+
+#Note that you will get fewer footprints in the 3'UTRs simply because the UTRs
+#  are not all there - i.e. RNASeq 3'UTR(+10,+100) density is less than
+#  RNASeq CDS(-10,-100) density. So should scale estimated contamination based
+#  on the RiboSeq 3'UTR occupancy by the ratio
+#  RNASeq CDS(-10,-100)/3'UTR(+10,+100)
+grep -i RNA RNPcontamination.txt | \
+  awk '{printf "%s %s %s %s %.3f\n",$1,$2,$3,$4,$6/$5}'
+#Need to scale RiboSeq by the reciprocal of this
+grep -i RNA RNPcontamination.txt | \
+  awk '{printf "%s %s %s %s %.3f\n",$1,$2,$3,$4,$5/$6}' | grep total
+
+
 #-----------------------------------------------------------------------
 
 # For virus-infected samples, calculate length distribution and framing of
@@ -453,95 +545,3 @@ cat $plotsdir/LengthDistros_bottom.R | sed 's/nnn/'$nsamples'/' \
   >> length_distros_combined.R
 
 R --no-save --slave < length_distros_combined.R
-
-#-------------------------------------------------------------------------
-
-# Assess contamination by RNPs; i.e. proteins binding to RNAs and forming
-#  complexes which happen to sediment with ribosomes and produce refseq_mRNA
-#  footprints. These will have a different read length size distribution from
-#  bona fide ribosome footprints. We can't recognize them on an individual
-#  basis, but we can quantify the level of contamination by comparing the read
-#  length size distributions of footprints in CDSs (mostly real ribosome
-#  footprints) to footprints in regions expected to have very few bona fide
-#  footprints (e.g. 3'UTRs).
-
-#Mostly relevant to virus work (nucleocapsids non-specifically binding RNA) and
-#  can gauge RNP contamination by comparing infected vs mock.
-
-#Select refseq_mRNAs with > 100 codons 3'UTR and >150 codons CDS. Calculate density of
-#  ribosomes in first 100 codons of 3'UTR relative to last 100 codons of CDS,
-#  avoiding 10 codons around the stop codon. Also compare footprint size
-#  distributions. Do for fwd and rev.
-
-offset=12 #the offof 12 nt is used to specify the position of the ribosomal A-site relative to the 5' done of the read
-minlen=25
-maxlen=50
-rm -f RNPcontamination.txt
-for line in $(awk '{printf "%s@%s@%s\n", $1,$2,$4}' libraries.txt)
-do
-  library=$(echo $line | awk -F"@" '{print $1}')
-  awk '{if ($3=="+") print $4,$5+1+"'"$offset"'",length($6)}' \
-    $library.refseq.mRNA.bowtie | egrep -v "<|>|join" | sed 's/_/ /g' | \
-    sed 's/\.\./ /' | sed 's/NM /NM_/' | sed 's/XM /XM_/' | \
-    awk '{if ($4-$3>=0+300&&1+$3-$2>=0+450) print $0}' > temp1.fwd
-  awk '{print $5-$3,$6}' temp1.fwd > temp1.fwd.total
-  sort temp1.fwd | uniq | awk '{print $5-$3,$6}' > temp1.fwd.uniq
-  awk '{if ($3=="-") print $4,$5+1+"'"$offset"'",length($6)}' \
-    $library.refseq.mRNA.bowtie | egrep -v "<|>|join" | sed 's/_/ /g' | \
-    sed 's/\.\./ /' | sed 's/NM /NM_/' | sed 's/XM /XM_/' | \
-    awk '{if ($4-$3>=0+300&&1+$3-$2>=0+450) print $0}' > temp1.rev
-  awk '{print $5-$3,$6}' temp1.rev > temp1.rev.total
-  sort temp1.rev | uniq | awk '{print $5-$3,$6}' > temp1.rev.uniq
-  for mode in uniq total
-  do
-    for dir in fwd rev
-    do
-      awk '{if (0+$1>=0-300&&0+$1<=0+300) print $0}' temp1.$dir.$mode | \
-        awk '{if (0+$1<=0-30||0+$1>=0+30) print $0}' > temp2
-      awk '{if (0+$1<0+0) print $0}' temp2 > temp2.$dir.cds
-      awk '{if (0+$1>0+0) print $0}' temp2 > temp2.$dir.utr
-      rm -f temp2
-      for region in cds utr
-      do
-        len=$minlen
-        rm -f $library.RNP.$dir.$region
-        while [ $len -le $maxlen ]
-        do
-          num=$(awk '{if ($2=="'"$len"'") s+=1}done{print 0+s}'\
-            temp2.$dir.$region)
-          echo $len $num >> $library.RNP.$mode.$dir.$region
-          len += 1
-        done
-      done
-    done
-    nCDSfwd=$(wc -l temp2.fwd.cds | awk '{print $1}') #number of line in this file=number of reads being considered
-    nUTRfwd=$(wc -l temp2.fwd.utr | awk '{print $1}')
-    nCDSrev=$(wc -l temp2.rev.cds | awk '{print $1}')
-    nUTRrev=$(wc -l temp2.rev.utr | awk '{print $1}')
-    echo $line $mode $nCDSfwd $nUTRfwd $nCDSrev $nUTRrev | sed 's/@/ /g' \
-      >> RNPcontamination.txt
-    cat $plotsdir/RNPcontamination.R | sed 's/ttt/'$line'/' | \
-      sed 's/lll/'$library'/' | sed 's/mmm/'$mode'/' | sed 's/@/ /g' \
-      > $library.RNP.$mode.R
-    R --no-save --slave < $library.RNP.$mode.R
-    rm -f temp2.{fwd,rev}.{cds,utr} temp1
-  done
-  rm -f temp1.{fwd,rev}.{uniq,total} temp1.{fwd,rev}
-done
-
-grep -i Ribo RNPcontamination.txt | \
-  awk '{printf "%s %s %s %s %.3f\n",$1,$2,$3,$4,$6/$5}'
-#-> This shows the level of RNP contamination (assuming a baseline of zero
-# footprint density in UTRs; mostly relevant for virus work where you can
-#  compare infected vs mock to get the real baseline in 3'UTRs).
-
-#Note that you will get fewer footprints in the 3'UTRs simply because the UTRs
-#  are not all there - i.e. RNASeq 3'UTR(+10,+100) density is less than
-#  RNASeq CDS(-10,-100) density. So should scale estimated contamination based
-#  on the RiboSeq 3'UTR occupancy by the ratio
-#  RNASeq CDS(-10,-100)/3'UTR(+10,+100)
-grep -i RNA RNPcontamination.txt | \
-  awk '{printf "%s %s %s %s %.3f\n",$1,$2,$3,$4,$6/$5}'
-#Need to scale RiboSeq by the reciprocal of this
-grep -i RNA RNPcontamination.txt | \
-  awk '{printf "%s %s %s %s %.3f\n",$1,$2,$3,$4,$5/$6}' | grep total
