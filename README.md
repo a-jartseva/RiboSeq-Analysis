@@ -36,7 +36,7 @@ To get started, make a local copy of the Git repository:
 
 Place all of your (gzipped) Fastq format files in a single directory, and create a file called "libraries.txt" which contains a description of the libraries in your analysis. 
 
-Follow the structure in the below example when creating your libraries.txt file:
+The libraries.txt file should follow the format of the below example:
 
 ```
 Index1       MuLV    Rattus_norvegicus       mock            RiboSeq-CHX 
