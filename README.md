@@ -17,6 +17,7 @@ Before beginning, ensure that the following programs are installed:
 - bowtie v1 (http://bowtie-bio.sourceforge.net)
 - STAR (https://github.com/alexdobin/STAR)
 - GNU parallel (https://www.gnu.org/software/parallel/)
+- samtools (http://samtools.sourceforge.net)
 
 Additionally, the following R packages must be installed for plotting:
 
