@@ -39,8 +39,8 @@ Place all of your (gzipped) Fastq format files in a single directory, and create
 Follow the structure in the below example when creating your libraries.txt file:
 
 ```
-Index1       MuLV    Rattus_norvegicus       mock        RiboSeq-CHX 
-Index2       MuLV    Rattus_norvegicus       mock        RNASeq
+Index1       MuLV    Rattus_norvegicus       mock            RiboSeq-CHX 
+Index2       MuLV    Rattus_norvegicus       mock            RNASeq
 Index3       MuLV    Rattus_norvegicus       infected        RiboSeq-CHX 
 Index4       MuLV    Rattus_norvegicus       infected        RNASeq
 ```
