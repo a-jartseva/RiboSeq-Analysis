@@ -32,10 +32,12 @@ To get started, make a local copy of the Git repository:
 
      git clone https://github.com/adamd3/RiboSeq-Analysis.git
 
-Now you can change directory to RiboSeq-Analysis and begin.
+**Running the pipeline**
+
+Place all of your (gzipped) Fastq format files in a single directory, and create a file called "libraries.txt" which contains a description of the libraries in your analysis. 
+
+Follow the structure in the below example when creating your libraries.txt file:
 
 
 
-
-
-
+You are now ready to start running the pipeline.
