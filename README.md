@@ -8,6 +8,7 @@
 - Plot length distribution, phasing, and positions of reads relative to start and stop codons on host RefSeq mRNAs.
 - Assess contamination of samples by ribonucleoproteins (RNPs)
 - For virus-infected samples, make combined plots showing length distribution of reads mapping to virus and host coding sequences.
+- For virus-infected samples, make combined plots showing phasing of reads mapping to virus and host coding sequences.
 
 **Pre-requisites:**
 
