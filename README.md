@@ -53,6 +53,6 @@ Index3       MuLV    Rattus_norvegicus       infected        RiboSeq-CHX
 Index4       MuLV    Rattus_norvegicus       infected        RNASeq
 ```
 
-The first column gives the library name (must be the same as the Fastq file name), the second is the virus strain (must be the same as the bowtie index name for that virus), the third is the host species name (again, must be the same as the bowtie index name for that species), fourth and fifth columns are self-explanatory. 
+The first column gives the library name (must be the same as the Fastq file name), the second is the virus strain (must be the same as the bowtie index name for that virus), the third is the host species name (must be the same as the STAR index name for that species), fourth and fifth columns are self-explanatory. 
 
 You are now ready to start running the pipeline.
