@@ -34,7 +34,7 @@ To get started, make a local copy of the Git repository:
 
 If changes have been made since you last cloned the repository, you can keep your local copy up-to-date by running:
 
-     cd into/cloned/fork-repo
+     cd into/cloned/repo
      git remote add upstream https://github.com/adamd3/RiboSeq-Analysis.git
      git fetch upstream
      git pull upstream master
