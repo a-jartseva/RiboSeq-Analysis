@@ -36,8 +36,15 @@ To get started, make a local copy of the Git repository:
 
 Place all of your (gzipped) Fastq format files in a single directory, and create a file called "libraries.txt" which contains a description of the libraries in your analysis. 
 
-Follow the structure in the below example when creating your libraries.txt file:
+The libraries.txt file should follow the format of the below example:
 
+```
+Index1       MuLV    Rattus_norvegicus       mock            RiboSeq-CHX 
+Index2       MuLV    Rattus_norvegicus       mock            RNASeq
+Index3       MuLV    Rattus_norvegicus       infected        RiboSeq-CHX 
+Index4       MuLV    Rattus_norvegicus       infected        RNASeq
+```
 
+The first column gives the library name (must be the same as the Fastq file name), the second is the virus strain (must be the same as the bowtie index name for that virus), the third is the host species name (again, must be the same as the bowtie index name for that species), fourth and fifth columns are self-explanatory. 
 
 You are now ready to start running the pipeline.
