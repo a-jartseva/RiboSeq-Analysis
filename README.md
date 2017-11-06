@@ -32,6 +32,13 @@ To get started, make a local copy of the Git repository:
 
      git clone https://github.com/adamd3/RiboSeq-Analysis.git
 
+If changes have been made since you last cloned the repository, you can keep your local copy up-to-date by running:
+
+cd into/cloned/fork-repo
+git remote add upstream https://github.com/adamd3/RiboSeq-Analysis.git
+git fetch upstream
+git pull upstream master
+
 **Running the pipeline**
 
 Place all of your (gzipped) Fastq format files in a single directory, and create a file called "libraries.txt" which contains a description of the libraries in your analysis. 
