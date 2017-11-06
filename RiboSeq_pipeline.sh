@@ -7,8 +7,8 @@ workingdir=$(pwd)
 # Directories
 databasedir="X" # directory containing bowtie databases
 stardbdir="X" # directory containing STAR databases
-scriptsdir="$workingdir/Scripts" # directory containing analysis scripts (python scripts, etc.)
-plotsdir="$workingdir/Plots" # directory containing plot scripts (R scripts)
+scriptsdir="X" # directory containing analysis scripts (python scripts, etc.)
+plotsdir="X" # directory containing plot scripts (R scripts)
 
 # Database names
 databases1="rRNA:rRNA/rRNA"
@@ -510,7 +510,7 @@ do
      sed 's/NM /NM_/' | sed 's/XM /XM_/' | \
     awk '{if (12+$5>=15+$2&&12+$5<=$3-15) print $6}'| sort -n | uniq -c \
       > $library.lenhist.mRNA.CDS
-    awk '{if (12+$2>=15+'$virus_ORF_start'&&12+$2<='$virus_ORF_end'-15) print $3}' \
+    awk '{if ( ($1=="'$virus_chr_acc'") && (12+$2>=15+'$virus_ORF_start') && (12+$2<='$virus_ORF_end'-15) ) print $3}' \
      $library.vRNAhits.total | sort -n | uniq -c > $library.lenhist.vRNA.CDS
 done
 
@@ -548,53 +548,30 @@ cat $plotsdir/LengthDistros_bottom.R | sed 's/nnn/'$nsamples'/' \
 
 R --no-save --slave < length_distros_combined.R
 
-
-
-
-#-----------------------------------------------------------------------
-
-
-
-
-# GOT TO HERE
-
-
-# To do:
-# produce a single file that has the exact format that is used for the R
-# combined framing plot script (framing_virus_plus_host.R).
-
-# the file should look like the following:
-
-# library        	virus_1	virus_2	virus_3	host_1	host_2	host_3
-# CHX1	74.14	11.84	4.31	79.75	9.76	10.49
-# RNA1	35.84	32.55	31.61	37.40	30.99	31.61
-# CHX2	69.39	14.04	16.57	73.70	12.34	13.96
-# RNA2	34.58	33.57	31.85	36.44	31.73	31.83
-# HAR	68.55	12.66	18.80	74.21	11.73	14.05
-
-
-
 #-----------------------------------------------------------------------
 
 # for infected samples, make combined phasing plots for mRNA + vRNA
 
-rm -f host_framing_summarised.txt
-echo -e "library \t frame_1 \t frame_2 \t frame_3" > host_framing_summarised.txt
-for library in $(awk '{print $1}' ../libraries.combined.txt)
-do
-  python $scriptsdir/summarise_host_framing.py $library.framing.txt \
-    >> host_framing_summarised.txt
-done
+# get virus phasing
+# again, need to specify the virus chromosome and start/stop coords
+virus_chr_acc="X" # e.g. "NC_001501"
+virus_ORF_start=X #621
+virus_ORF_end=X #2237
 
-# virus phasing
-# gag ORF (621..2237)
-
-for line in $(awk '{printf "%s:%s:%s\n", $1,$2,$4}' ../libraries.combined.txt)
+for line in $(awk '{printf "%s:%s:%s:%s:%s\n", $1,$2,$3,$4,$5}' libraries.txt | grep infected)
 do
     library=$(echo $line | awk -F: '{print $1}')
-    echo $library >> vRNA.framing
-    awk '{if (12+$2>=15+621&&12+$2<=2237-15) print ($2-621)%3}' $library.vRNAhits.total | \
-      awk '{s[$1]+=1}END{printf "%s 0\n%s 1\n%s 2\n",0+s[0],0+s[1],0+s[2]}' >> vRNA.framing
-    echo "" >> vRNA.framing
+    awk '{if ( ($1=="'$virus_chr_acc'") && (12+$2>=15+'$virus_ORF_start') && (12+$2<='$virus_ORF_end'-15) ) print $3,$2,($2-'$virus_ORF_start')%3}' \
+     $library.vRNAhits.total > $library.vRNA.framing
 done
-# calculate the % of reads in each frame manually for plotting
+
+printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "library" "virus_1" "virus_2" "virus_3" "host_1" "host_2" "host_3" >  framing_summarised.txt
+for line in $(awk '{printf "%s:%s:%s:%s:%s\n", $1,$2,$3,$4,$5}' libraries.txt | grep infected)
+do
+    library=$(echo $line | awk -F: '{print $1}')
+    python $scriptsdir/summarise_framing.py $library.framing.txt \
+     $library.vRNA.framing >> framing_summarised.txt
+done
+
+cat $plotsdir/Framing_combined.R > Framing_combined.R
+R --no-save --slave < Framing_combined.R
