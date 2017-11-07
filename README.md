@@ -8,6 +8,7 @@
 - Plot length distribution, phasing, and positions of reads relative to start and stop codons on host RefSeq mRNAs.
 - Assess contamination of samples by ribonucleoproteins (RNPs)
 - For virus-infected samples, make combined plots showing length distribution of reads mapping to virus and host coding sequences.
+- For virus-infected samples, make combined plots showing phasing of reads mapping to virus and host coding sequences.
 
 **Pre-requisites:**
 
@@ -32,6 +33,13 @@ To get started, make a local copy of the Git repository:
 
      git clone https://github.com/adamd3/RiboSeq-Analysis.git
 
+If changes have been made since you last cloned the repository, you can keep your local copy up-to-date by running:
+
+     cd into/cloned/repo
+     git remote add upstream https://github.com/adamd3/RiboSeq-Analysis.git
+     git fetch upstream
+     git pull upstream master
+
 **Running the pipeline**
 
 Place all of your (gzipped) Fastq format files in a single directory, and create a file called "libraries.txt" which contains a description of the libraries in your analysis. 
@@ -45,6 +53,6 @@ Index3       MuLV    Rattus_norvegicus       infected        RiboSeq-CHX
 Index4       MuLV    Rattus_norvegicus       infected        RNASeq
 ```
 
-The first column gives the library name (must be the same as the Fastq file name), the second is the virus strain (must be the same as the bowtie index name for that virus), the third is the host species name (again, must be the same as the bowtie index name for that species), fourth and fifth columns are self-explanatory. 
+The first column gives the library name (must be the same as the Fastq file name), the second is the virus strain (must be the same as the bowtie index name for that virus), the third is the host species name (must be the same as the STAR index name for that species), fourth and fifth columns are self-explanatory. 
 
 You are now ready to start running the pipeline.
