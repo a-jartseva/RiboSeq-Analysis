@@ -1,0 +1,8 @@
+plot(temp,temp,type="n",ylab="",xlab="",main="",axes=FALSE)
+plot(temp,temp,type="n",ylab="",xlab="",main="",axes=FALSE)
+plot(temp,temp,type="n",ylab="",xlab="",main="",axes=FALSE)
+plot(temp,temp,type="n",ylab="",xlab="",main="",axes=FALSE)
+plot(temp,temp,type="n",ylab="",xlab="",main="",axes=FALSE)
+plot(temp,temp,type="n",ylab="",xlab="",main="",axes=FALSE)
+plot(temp,temp,type="n",ylab="",xlab="",main="",axes=FALSE)
+dev.off()
