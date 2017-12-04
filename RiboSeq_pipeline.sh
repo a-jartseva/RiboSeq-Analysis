@@ -75,7 +75,7 @@ do
   for dbline in $(echo $databases1 $databases2)
   do
     dbbowtie=$(echo $dbline | awk -F: '{print $2}')
-    dbdir=$(ls $databasedir/$host/$dbbowtie.*ebwt | wc -l | awk '{print $1}')
+    dbdir=$(ls $databasedir/$host/$dbbowtie/$dbbowtie.*ebwt | wc -l | awk '{print $1}')
     if [ -z $dbdir ]; then
       echo "Can't find bowtie database $databasedir/$host/$dbbowtie"
     fi
